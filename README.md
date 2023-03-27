@@ -20,6 +20,7 @@ This repo was built on top of [llama.cpp](https://github.com/ggerganov/llama.cpp
 * Easy-to-use Python interface to the C++ library.
 * High performance compared to the original [LLaMA repo](https://github.com/facebookresearch/llama), thanks to the C++ implementation.
 * Ability to save and load the state of the model with system prompts.
+* Added WebSocket server example (work in progress)
 
 ### Supported Models
 

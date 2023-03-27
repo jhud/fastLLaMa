@@ -15,7 +15,9 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-cd build && cmake .. && make
+cd build 
+cmake .. -DPYTHON_EXECUTABLE=/Users/jameshudson/.pyenv/shims/python -DPYTHON_INCLUDE_DIR=/Users/jameshudson/.pyenv/versions/3.11-dev/include
+make
 
 if [ $? -ne 0 ]; then
     echo "Unable to build bridge.cpp and link the 'libllama'"
