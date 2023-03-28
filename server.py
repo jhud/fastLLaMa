@@ -2,6 +2,7 @@
 WebSocket server to serve up responses to prompts given in JSON.
 An example:
 command = {"command": "start", "model": "alpaca", "mode": "by_sentence", "input": "How do I pat a dog?"}
+{"command": "reload_model"} = reset the model.
 """
 import asyncio
 import json
@@ -13,9 +14,9 @@ sys.path.append("./build/")
 import fastLlama
 
 # Wherever your models are on disk
-MODEL_ID = "ALPACA-LORA-13B"
-MODEL_PATH = "../llm_models/alpaca/13B/ggml-model-q4_0.bin"
-#MODEL_PATH = "../llm_models/alpaca/7B/ggml-model-q4_0.bin"
+MODEL_ID = "ALPACA-LORA-7B"
+#MODEL_PATH = "../llm_models/alpaca/13B/ggml-model-q4_0.bin"
+MODEL_PATH = "../llm_models/alpaca/7B/ggml-model-q4_0.bin"
 
 
 #res = model.save_state("./saves/fast_llama.bin") #save model state
@@ -39,6 +40,13 @@ class LLMServer:
         self.host = host
         self.port = port
 
+        self.load_model()
+
+    def start(self):
+        self.server.run_forever()
+
+    def load_model(self):
+        print("Loading model...")
         self.model = fastLlama.Model(
             id=MODEL_ID,
             path=MODEL_PATH,  # path to model
@@ -49,19 +57,15 @@ class LLMServer:
         )
         print("Loaded!\n")
 
-    def start(self):
-        self.server.run_forever()
 
-
-    async def handle_command(self, ws):
-        text = await ws.recv()
+    async def handle_command(self, text, ws):
         message = json.loads(text)
         command = message["command"]
         model = message.get("model", "generic")
 
-        print(text + "\n")
-
-        if command == "start":
+        if command == "reload_model":
+            self.load_model()
+        elif command == "start":
             out_queue = []
             input = message["input"]
             mode = message.get("mode", "none")
@@ -85,13 +89,11 @@ class LLMServer:
                     await asyncio.sleep(0.1)
                     print(f"\nout: {out_queue}\n")
                     for i, token in enumerate(out_queue):
-                        print(f"{i}: {token}\n")
                         if "." in token:
                             to_send = out_queue[:i+1]
                             await ws.send("".join(to_send))
                             for v in range(0, i+1):
                                 out_queue.pop(0)
-                            print(f"to send: {to_send}, cut at {i+1}.\n")
                             break
                 await ws.send("".join(out_queue))
             else:
@@ -138,7 +140,8 @@ class LLMServer:
 
         try:
             async for message in ws:
-                await self.handle_command(ws)
+                print(f"MSG: {message}\n")
+                await self.handle_command(message, ws)
         except websockets.exceptions.ConnectionClosed:
             print("Connection closed")
 
