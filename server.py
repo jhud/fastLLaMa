@@ -84,10 +84,9 @@ class LLMServer:
                 while t.is_alive():
                     await asyncio.sleep(0.1)
                 await ws.send("".join(out_queue))
-            elif mode == "by_sentence":
+            elif mode == "sentence":
                 while t.is_alive():
                     await asyncio.sleep(0.1)
-                    print(f"\nout: {out_queue}\n")
                     for i, token in enumerate(out_queue):
                         if "." in token:
                             to_send = out_queue[:i+1]
@@ -125,7 +124,7 @@ class LLMServer:
             exit(1)
 
         res = self.model.generate(
-            num_tokens=100,
+            num_tokens=50,
             top_p=0.95,  # top p sampling (Optional)
             temp=0.8,  # temperature (Optional)
             repeat_penalty=1.3,  # repetition penalty (Optional)

@@ -3,6 +3,9 @@ pybind11==2.10.4
 sentencepiece==0.1.97
 torch==2.0.0
 
+# for OpenAI inegration
+openai
+
 # For server
 websockets
 
