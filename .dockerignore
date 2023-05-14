@@ -14,25 +14,14 @@ build-no-accel/
 build-sanitize-addr/
 build-sanitize-thread/
 
-dist/
-
 env/
-
-models/*
 
 /main
 /quantize
 
+examples/python/fastllama/
+
 arm_neon.h
 compile_commands.json
 
-cmake/CompilerFlagVariables.cmake
-cmake/GlobalVars.cmake
-
-__pycache__/
-build/
-
-examples/python/fastllama/api.py
-examples/python/fastllama/pyfastllama.so
-
-node_modules/
+CompilerFlagVariables.cmake
